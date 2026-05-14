@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiCrime // Secure Access</title>
+    <style>
+        /* ============================================
+           CORE VARIABLES - MATCHES AICRIME SITE
+           ============================================ */
+        :root {
+            --green: #00ff41;
+            --green-dim: #00cc33;
+            --green-dark: #009922;
+            --cyan: #00ffff;
+            --red: #ff0040;
+            --orange: #ff8c00;
+            --bg: #0a0a0a;
+            --bg-light: #0d0d0d;
+            --card: #111111;
+            --border: #1a1a1a;
+            --text: #c0c0c0;
+            --text-dim: #666;
+            --font-mono: 'Courier New', 'Consolas', 'Monaco', monospace;
+            --glow-green: 0 0 10px #00ff41, 0 0 20px #00ff4155, 0 0 40px #00ff4122;
+            --glow-cyan: 0 0 10px #00ffff, 0 0 20px #00ffff55;
+            --glow-red: 0 0 10px #ff0040, 0 0 20px #ff004055;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg);
+            font-family: var(--font-mono);
+            color: var(--text);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Matrix background */
+        #matrix-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; opacity: 0.05; pointer-events: none;
+        }
+
+        /* Scanline overlay */
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.01) 2px, rgba(0, 255, 65, 0.01) 4px);
+            z-index: 1; pointer-events: none;
+        }
+
+        /* CRT flicker */
+        body::after {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent; z-index: 2; pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+        @keyframes flicker { 0%, 100% { opacity: 0.97; } 50% { opacity: 1; } }
+
+        /* ============================================
+           CYBER ICON SYSTEM
+           ============================================ */
+        .cyber-icon {
+            width: 14px; height: 14px; display: inline-block; vertical-align: middle;
+            stroke: currentColor; fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round; margin-right: 6px;
+        }
+
+        /* ============================================
+           TERMINAL CARD
+           ============================================ */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            width: 100%;
+            max-width: 480px;
+            margin: 1rem;
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.4);
+            animation: cardGlow 3s ease-in-out infinite;
+        }
+        @keyframes cardGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 65, 0.08), inset 0 0 40px rgba(0, 0, 0, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 65, 0.15), inset 0 0 40px rgba(0, 0, 0, 0.4); }
+        }
+
+        /* Terminal header */
+        .card-header {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding-bottom: 1rem; margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .card-dot.r { background: #ff5f56; }
+        .card-dot.y { background: #ffbd2e; }
+        .card-dot.g { background: #27c93f; }
+        .card-title {
+            font-size: 0.75rem; color: var(--text-dim);
+            letter-spacing: 2px; text-transform: uppercase; margin-left: 0.5rem;
+        }
+
+        /* Form title */
+        h2 {
+            color: var(--green);
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+            text-shadow: var(--glow-green);
+        }
+        p.subtitle {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============================================
+           TERMINAL INPUTS
+           ============================================ */
+        .form-group { margin-bottom: 1.25rem; }
+        
+        .input-label {
+            display: block;
+            color: var(--green);
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+        .input-label .prompt { color: var(--cyan); }
+
+        input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 12px rgba(0, 255, 65, 0.15);
+        }
+        input::placeholder { color: #333; }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--green);
+            color: var(--bg);
+            border: none;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        button:hover {
+            box-shadow: var(--glow-green);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        button::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 0; height: 0; background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        button:active::after { width: 300px; height: 300px; }
+
+        /* ============================================
+           TOGGLE LINK
+           ============================================ */
+        .toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+        .toggle a {
+            color: var(--cyan);
+            text-decoration: none;
+            cursor: pointer;
+            transition: text-shadow 0.3s;
+        }
+        .toggle a:hover {
+            text-shadow: var(--glow-cyan);
+        }
+
+        /* ============================================
+           MESSAGE BOX
+           ============================================ */
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 0;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            display: none;
+            border-left: 3px solid;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .message.success {
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .message.error {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .hidden { display: none; }
+
+        /* ============================================
+           ACCESSIBILITY & UTILS
+           ============================================ */
+        @media (max-width: 500px) {
+            .card { padding: 1.5rem; margin: 0.5rem; }
+            h2 { font-size: 1.1rem; }
+        }
+
+        /* Focus visible for keyboard nav */
+        input:focus-visible, button:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix Background -->
+    <canvas id="matrix-bg"></canvas>
+
+    <div class="card">
+        <!-- Terminal Header -->
+        <div class="card-header">
+            <div class="card-dot r"></div>
+            <div class="card-dot y"></div>
+            <div class="card-dot g"></div>
+            <span class="card-title">authentication.terminal</span>
+        </div>
+
+        <h2 id="formTitle">[ ACCESS ]</h2>
+        <p class="subtitle" id="formSubtitle">Verify credentials to proceed</p>
+        
+        <div id="msgBox" class="message"></div>
+
+        <form id="authForm">
+            <div class="form-group">
+                <label class="input-label" for="username">
+                    <span class="prompt">root</span>@aicrime:~$ username
+                </label>
+                <input type="text" id="username" placeholder="enter_identifier" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label class="input-label" for="password">
+                    <span class="prompt">root</span>@aicrime:~$ password
+                </label>
+                <input type="password" id="password" placeholder="••••••••••" required autocomplete="current-password">
+            </div>
+            <button type="submit" id="submitBtn">Authenticate →</button>
+        </form>
+
+        <div class="toggle">
+            <span id="toggleText">No access token? </span>
+            <a id="toggleLink">Generate one</a>
+        </div>
+    </div>
+
+    <!-- ORIGINAL JAVASCRIPT - UNCHANGED LOGIC -->
+    <script>
+        // ============================================
+        // MATRIX RAIN (LIGHTWEIGHT)
+        // ============================================
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        const chars = '01{}[]<>|/\\AiCrime';
+        const charArray = chars.split('');
+        const fontSize = 16;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = Array(columns).fill(1);
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 60);
+
+        // ============================================
+        // ORIGINAL WORKFLOW - PRESERVED 100%
+        // ============================================
+        const authForm = document.getElementById('authForm');
+        const formTitle = document.getElementById('formTitle');
+        const formSubtitle = document.getElementById('formSubtitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleText = document.getElementById('toggleText');
+        const toggleLink = document.getElementById('toggleLink');
+        const msgBox = document.getElementById('msgBox');
+        
+        let isLoginMode = true;
+
+        // Toggle between Login and Register
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            
+            if (isLoginMode) {
+                formTitle.textContent = '[ ACCESS ]';
+                formSubtitle.textContent = 'Verify credentials to proceed';
+                submitBtn.textContent = 'Authenticate →';
+                toggleText.textContent = "No access token? ";
+                toggleLink.textContent = 'Generate one';
+                document.getElementById('username').setAttribute('autocomplete', 'username');
+                document.getElementById('password').setAttribute('autocomplete', 'current-password');
+            } else {
+                formTitle.textContent = '[ NEW TOKEN ]';
+                formSubtitle.textContent = 'Create secure access credentials';
+                submitBtn.textContent = 'Generate →';
+                toggleText.textContent = "Already have access? ";
+                toggleLink.textContent = 'Authenticate';
+                document.getElementById('username').setAttribute('autocomplete', 'new-username');
+                document.getElementById('password').setAttribute('autocomplete', 'new-password');
+            }
+            hideMessage();
+        });
+
+        // Handle Form Submission
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const endpoint = isLoginMode ? '/api/login' : '/api/register';
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = isLoginMode ? 'Authenticating...' : 'Generating...';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                    if (isLoginMode) {
+                        // Simulate redirect after login
+                        setTimeout(() => alert('Redirecting to dashboard... (Study Project)'), 1000);
+                    } else {
+                        // Auto-switch to login after successful registration
+                        isLoginMode = false;
+                        toggleLink.click();
+                    }
+                } else {
+                    showMessage(data.error || 'Request failed', 'error');
+                }
+            } catch (err) {
+                showMessage('Network error. Is server running?', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLoginMode ? 'Authenticate →' : 'Generate →';
+            }
+        });
+
+        function showMessage(text, type) {
+            msgBox.textContent = `> ${text}`;
+            msgBox.className = `message ${type}`;
+            msgBox.style.display = 'block';
+        }
+
+        function hideMessage() {
+            msgBox.style.display = 'none';
+        }
+
+        // Console easter egg
+        console.log('%c[AiCrime Auth]', 'color: #00ff41; font-weight: bold;');
+        console.log('%c> Secure terminal initialized', 'color: #00ffff;');
+    </script>
+</body>
+</html>
