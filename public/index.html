@@ -1010,8 +1010,8 @@ print(response.json()[<span class="string">"response"</span>])</pre>
         // ============================================
         // MODALS
         // ============================================
-        document.getElementById('loginBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('active'));
-        document.getElementById('registerBtn').addEventListener('click', () => document.getElementById('registerModal').classList.add('active'));
+        document.getElementById('loginBtn').addEventListener('click', () => { window.location.href = 'login.html'; });
+        document.getElementById('registerBtn').addEventListener('click', () => { window.location.href = 'login.html'; });
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         function switchModal(from, to) { closeModal(from); setTimeout(() => document.getElementById(to).classList.add('active'), 200); }
         document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); }));
