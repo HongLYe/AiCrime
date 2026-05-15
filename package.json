@@ -1,34 +1,25 @@
 {
-  "name": "my-project",
+  "name": "aicrime-auth",
   "version": "1.0.0",
-  "description": "My project",
+  "description": "Authentication study project for AiCrime",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
-    "stop": "kill $(lsof -t -i:3000)"
+    "dev": "node backend/server.js",
+    "postinstall": "node -e \"try{require('sqlite3')}catch(e){}\" || echo 'sqlite3 optional for local dev only'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "express": "^4.18.2",
-    "sqlite3": "^6.0.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  }
-  {
-  "scripts": {
-    "start": "node backend/server.js",
-    "postinstall": "npm rebuild sqlite3 --build-from-source 2>/dev/null || true"
-  },
+  "keywords": ["auth", "express", "study"],
+  "author": "HongLYe",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "optionalDependencies": {
     "sqlite3": "^5.1.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
-}
-
