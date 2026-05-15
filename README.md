@@ -67,3 +67,11 @@ cp .env.example .env
 
 # 4. Start the development server
 npm start
+
+## 🚀 Running the Project
+
+```bash
+npm install
+npm start
+# Server: http://localhost:3000
+# Health: http://localhost:3000/api/health
