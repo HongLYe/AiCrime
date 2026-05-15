@@ -1,16 +1,29 @@
+# render.yaml - Render.com deployment configuration
+# Deploy via: render.com/new → Connect GitHub → Auto-detect this file
+
 services:
   - type: web
     name: aicrime-auth
     env: node
+    region: oregon  # or your preferred region
+    plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
-    # Optional: Add PostgreSQL later
-    # database:
-    #   name: aicrime-db
-    #   databaseName: aicrime
-    #   user: aicrime_user
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aicrime-db  # Optional: uncomment to add PostgreSQL later
+          property: connectionString
+
+# Optional: Add PostgreSQL for persistent data (uncomment when ready)
+# databases:
+#   - name: aicrime-db
+#     databaseName: aicrime
+#     user: aicrime_user
+#     plan: free
+#     ipAllowList: []  # Allow all IPs (restrict in production)
