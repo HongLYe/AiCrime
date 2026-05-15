@@ -75,3 +75,18 @@ npm install
 npm start
 # Server: http://localhost:3000
 # Health: http://localhost:3000/api/health
+```
+
+
+**Fix "Features" section**:
+```md
+## ✨ Features
+
+- 🔐 User registration with **bcryptjs (cost factor 10)** password hashing
+- 🔑 Login with generic error messages (prevents user enumeration)
+- 🛡️ Parameterized SQL queries (SQL injection protected)
+- 📦 SQLite database for local development
+- 🌐 Express static file serving
+- 🩺 `/api/health` endpoint for uptime monitoring
+
+> 🔐 **Note**: SQLite data resets on Render free tier after redeploy or 15 min idle. For persistent data, migrate to PostgreSQL.
