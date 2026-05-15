@@ -1,7 +1,10 @@
+# render.yaml - Auto-deploy configuration for Render.com
 services:
   - type: web
     name: aicrime-auth
     env: node
+    region: oregon
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
@@ -10,3 +13,15 @@ services:
         value: production
       - key: PORT
         value: 3000
+      # PostgreSQL: Add after creating DB in Render dashboard
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: aicrime-db
+      #     property: connectionString
+
+# Optional: Add PostgreSQL database (uncomment when ready)
+# databases:
+#   - name: aicrime-db
+#     plan: free
+#     databaseName: aicrime
+#     user: aicrime_user
