@@ -1,5 +1,5 @@
-# render.yaml - Render.com deployment configuration
-# Deploy via: render.com/new → Connect GitHub → Auto-detect this file
+# render.yaml - Render.com auto-deploy configuration
+# Docs: https://render.com/docs/blueprint-spec
 
 services:
   - type: web
@@ -9,21 +9,21 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    healthCheckPath: /
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: aicrime-db  # Optional: uncomment to add PostgreSQL later
-          property: connectionString
+      # Optional: Add PostgreSQL later
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: aicrime-db
+      #     property: connectionString
 
-# Optional: Add PostgreSQL for persistent data (uncomment when ready)
+# Optional: Add PostgreSQL database (uncomment when ready)
 # databases:
 #   - name: aicrime-db
+#     plan: free
 #     databaseName: aicrime
 #     user: aicrime_user
-#     plan: free
-#     ipAllowList: []  # Allow all IPs (restrict in production)
