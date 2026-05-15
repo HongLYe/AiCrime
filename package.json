@@ -19,5 +19,16 @@
   "devDependencies": {
     "nodemon": "^3.0.2"
   }
+  {
+  "scripts": {
+    "start": "node backend/server.js",
+    "postinstall": "npm rebuild sqlite3 --build-from-source 2>/dev/null || true"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  }
+}
 }
 
