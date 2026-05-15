@@ -1,12 +1,7 @@
-# render.yaml - Render.com auto-deploy configuration
-# Docs: https://render.com/docs/blueprint-spec
-
 services:
   - type: web
     name: aicrime-auth
     env: node
-    region: oregon  # or your preferred region
-    plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
@@ -15,15 +10,3 @@ services:
         value: production
       - key: PORT
         value: 3000
-      # Optional: Add PostgreSQL later
-      # - key: DATABASE_URL
-      #   fromDatabase:
-      #     name: aicrime-db
-      #     property: connectionString
-
-# Optional: Add PostgreSQL database (uncomment when ready)
-# databases:
-#   - name: aicrime-db
-#     plan: free
-#     databaseName: aicrime
-#     user: aicrime_user
